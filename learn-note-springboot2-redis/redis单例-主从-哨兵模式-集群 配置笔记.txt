@@ -1,0 +1,173 @@
+摘自：
+
+单机
+	单机启动：
+	redis-server redis.conf
+	单机测试：
+	redis-cli -h 127.0.0.1 -p 6379
+
+
+主从
+	主：
+	bind 127.0.0.1
+	port 6379
+	logfile 6379.log
+	dbfilename dump-6379.rdb
+	
+	从：
+	bind 127.0.0.1
+	port 6380
+	logfile 6380.log
+	dbfilename dump-6380.rdb
+	slaveof 127.0.0.1 6379
+	
+	测试
+		redis-cli -h 127.0.0.1 -p 6379
+		
+		127.0.0.1:6379> get msg
+		(nil)
+		
+		redis-cli -h 127.0.0.1 -p 6380
+		
+		127.0.0.1:6380> get msg
+		(nil)
+		
+		127.0.0.1:6379> set msg "hello"
+		OK
+		
+		127.0.0.1:6380> get msg
+		"hello"
+		虽然我们只是在6379的实例上设置了msg这条数据，但是在6380的实例上也存有了相应的数据，说明我们成功配置了redis的主从模式。
+		
+	另外，如果不在配置文件中指定主从节点的关系，也可以在启动相关redis实例之后使用slaveof命令来指定当前节点称为某个节点的从节点，如：
+	127.0.0.1:6380> slaveof 127.0.0.1 6379
+		
+sentinel配置
+	2.8版本之后redis正式提供了sentinel（哨兵）架构
+	
+	配置文件sentinel-26379.conf，sentinel-26380.conf,分别按照如下示例编辑
+		port 26379  
+		daemonize yes  
+		logfile "26379.log"  
+		dir /opt/soft/redis/data  
+		sentinel monitor mymaster 127.0.0.1 6379 2
+		sentinel down-after-milliseconds mymaster 30000  
+		sentinel parallel-syncs mymaster 1  
+		sentinel failover-timeout mymaster 180000
+		sentinel myid mm55d2d712b1f3f312b637f9b546f00cdcedc787
+	
+	启动sentinel
+		redis-sentinel sentinel-26379.conf
+		redis-sentinel sentinel-26380.conf
+	
+	连接sentinel节点
+		redis-cli -p 26379
+	查看sentinel状态：
+		127.0.0.1:26379> info sentinel
+			# Sentinel
+			sentinel_masters:1
+			sentinel_tilt:0
+			sentinel_running_scripts:0
+			sentinel_scripts_queue_length:0
+			sentinel_simulate_failure_flags:0
+			master0:name=mymaster,status=ok,address=127.0.0.1:6379,slaves=1,sentinels=2
+			sentinel检测到主从节点总共有两个，其中一个主节点，一个从节点，并且sentinel节点总共也有两个
+			
+	通过主动下线主节点来模拟sentinel的故障转移过程
+		对主节点执行如下命令：	
+			127.0.0.1:6379> shutdown save
+		查看6380节点：
+			127.0.0.1:6380> info replication
+			可以看到，当端口为6379的实例下线之后，端口为6380的实例被重新竞选为新的主节点
+		此时重新启用端口为6379的节点
+			可以看到，端口为6379的redis实例重新连接后，sentinel节点检测到其重新连接，那么对其发送命令，使其成为新的主节点的从节点。
+			
+redis集群的配置
+	redis 3.0版本推出的一个功能
+	
+	redis.conf文件复制六份，分别取名为：cluster-7001.conf、cluster-7002.conf、cluster-7003.conf、cluster-7004.conf、cluster-7005.conf、cluster-7006.conf
+	这六份配置文件，以其中一份为例，以下是其需要修改的参数：
+		port 7001
+		cluster-enabled yes
+		cluster-node-timeout 15000
+		cluster-config-file nodes-7001.conf
+		pidfile /var/run/redis_6379.pid
+		logfile cluster-7001.log
+		dbfilename dump-cluster-7001.rdb
+		appendfilename appendonly-cluster-7001.aof
+	
+	redis-server cluster-7001.conf
+	redis-server cluster-7002.conf
+	redis-server cluster-7003.conf
+	redis-server cluster-7004.conf
+	redis-server cluster-7005.conf
+	redis-server cluster-7006.conf
+	
+	redis-cli -p 7001
+	连接上后使用cluster meet命令分别连接其余节点：
+		127.0.0.1:7001>cluster meet 127.0.0.1 7002
+		127.0.0.1:7001>cluster meet 127.0.0.1 7003
+		127.0.0.1:7001>cluster meet 127.0.0.1 7004
+		127.0.0.1:7001>cluster meet 127.0.0.1 7005
+		127.0.0.1:7001>cluster meet 127.0.0.1 7006
+	连接好后可以使用cluster nodes命令查看当前集群状态：
+		127.0.0.1:7001> cluster nodes
+			d97868068f199b3c2c87574d70280b3fa27bd4a6 127.0.0.1:7006 master - 0 1575036665174 0 connected
+			0211019970d919bfb3cfc212763cbd63d484bddb 127.0.0.1:7002 master - 0 1575036667278 1 connected
+			c4884a9e99f1f46a7db46b1999fdf67ef71d09c7 127.0.0.1:7001 myself,master - 0 0 5 connected
+			721cf47a3bbbc695a37907cea398e596595139e8 127.0.0.1:7003 master - 0 1575036669289 2 connected
+			3e4444740305e85207463b0192ab001ff1c56a72 127.0.0.1:7005 master - 0 1575036668284 4 connected
+			4f246040d321a545bf4b2f8777e00d90201f6bab 127.0.0.1:7004 master - 0 1575036670296 3 connected
+	分配虚拟槽
+		使用redis-cli分别连接到7001，7002和7003端口的节点中，然后分别执行如下命令：
+			127.0.0.1:7001>cluster addslots {0...5461}
+			127.0.0.1:7002>cluster addslots {5462...10922}
+			127.0.0.1:7003>cluster addslots {10923...16383}
+			如果Invalid or out of range slot，{0...5461}改为{0..5461}
+			还报错./redis-cli -h 127.0.0.1 -p 7002 cluster addslots {0..5461}
+			还报错./redis-cli -h 127.0.0.1 -p 7002 cluster addslots 5461
+			可以了，但是一次只能设置一个值。写了三个脚本，执行一遍就行了 
+			7001addSlots-5461.bat
+			7002addSlots-5462-10922.bat
+			7003addSlots-10923-16383.bat
+			再不行的话！！！直接找到node.conf在里面直接配置，重启
+	添加完槽位后可使用cluster info命令查看当前集群状态：
+		127.0.0.1:7001> cluster info
+			cluster_state:ok
+			cluster_slots_assigned:16384
+			cluster_slots_ok:16384
+			cluster_slots_pfail:0
+			cluster_slots_fail:0
+			cluster_known_nodes:6
+			cluster_size:3
+			cluster_current_epoch:5
+			cluster_my_epoch:0
+			cluster_stats_messages_sent:4874
+			cluster_stats_messages_received:4726 
+	16384 个虚拟槽位分配给了三个节点，而剩余的三个节点我们通过如下命令将其配置为这三个节点的从节点，从而达到高可用的目的：
+		127.0.0.1:7004>cluster replicate c4884a9e99f1f46a7db46b1999fdf67ef71d09c7
+		OK
+		127.0.0.1:7005>cluster replicate 0211019970d919bfb3cfc212763cbd63d484bddb
+		OK
+		127.0.0.1:7006>cluster replicate 721cf47a3bbbc695a37907cea398e596595139e8
+		OK
+	如此，所有的集群节点都配置完毕，并且处于可用状态。
+		127.0.0.1:7006> cluster nodes
+			4f246040d321a545bf4b2f8777e00d90201f6bab 127.0.0.1:7004 slave c4884a9e99f1f46a7db46b1999fdf67ef71d09c7 0 1575039284715 5 connected
+			3e4444740305e85207463b0192ab001ff1c56a72 127.0.0.1:7005 slave 0211019970d919bfb3cfc212763cbd63d484bddb 0 1575039289245 4 connected
+			c4884a9e99f1f46a7db46b1999fdf67ef71d09c7 127.0.0.1:7001 master - 0 1575039287229 5 connected 0-5461
+			721cf47a3bbbc695a37907cea398e596595139e8 127.0.0.1:7003 master - 0 1575039286222 2 connected 10923-16383
+			d97868068f199b3c2c87574d70280b3fa27bd4a6 127.0.0.1:7006 myself,slave 721cf47a3bbbc695a37907cea398e596595139e8 0 0 0 connected
+			0211019970d919bfb3cfc212763cbd63d484bddb 127.0.0.1:7002 master - 0 1575039288235 1 connected 5462-10922
+
+	redis-cli -c -p 7001
+	注意连接集群模式的redis实例时需要加上参数-c
+		get msg
+		-> Redirected to slot [6257] located at 127.0.0.1:7002
+		(nil)
+		可以看到，在7001端口的实例上执行get命令时，其首先会为当前的键通过一致哈希算法计算其所在的槽位，并且判断该槽位不在当前redis实例中，因而重定向到目标实例上执行该命令，最后发现没有该键对应的值，因而返回了一个（nil）。
+	
+	
+	
+另：为什么Redis集群有16384个槽:https://www.cnblogs.com/rjzheng/p/11430592.html
+			

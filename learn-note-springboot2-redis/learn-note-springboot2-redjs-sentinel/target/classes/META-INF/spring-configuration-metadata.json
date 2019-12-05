@@ -1,0 +1,57 @@
+{
+  "groups": [
+    {
+      "name": "spring.redis.sentinel",
+      "type": "com.redis.cluster.config.RedisParam",
+      "sourceType": "com.redis.cluster.config.RedisParam"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.redis.sentinel.master",
+      "type": "java.lang.String",
+      "sourceType": "com.redis.cluster.config.RedisParam"
+    },
+    {
+      "name": "spring.redis.sentinel.max-total",
+      "type": "java.lang.Integer",
+      "sourceType": "com.redis.cluster.config.RedisParam"
+    },
+    {
+      "name": "spring.redis.sentinel.max-wait-millis",
+      "type": "java.lang.Integer",
+      "sourceType": "com.redis.cluster.config.RedisParam"
+    },
+    {
+      "name": "spring.redis.sentinel.min-idle",
+      "type": "java.lang.Integer",
+      "sourceType": "com.redis.cluster.config.RedisParam"
+    },
+    {
+      "name": "spring.redis.sentinel.nodes",
+      "type": "java.lang.String",
+      "sourceType": "com.redis.cluster.config.RedisParam"
+    },
+    {
+      "name": "spring.redis.sentinel.test-on-borrow",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.redis.cluster.config.RedisParam"
+    },
+    {
+      "name": "spring.redis.sentinel.test-on-return",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.redis.cluster.config.RedisParam"
+    },
+    {
+      "name": "spring.redis.sentinel.test-while-idle",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.redis.cluster.config.RedisParam"
+    },
+    {
+      "name": "spring.redis.sentinel.time-between-eviction-runs-millis",
+      "type": "java.lang.Integer",
+      "sourceType": "com.redis.cluster.config.RedisParam"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,77 @@
+分页拦截器
+
+写法一
+	注意：配置MapperScan时，同一个数据源不能加载两次，会导致：【在系统中发现了多个分页插件,请检查系统配置! 】错误
+	@MapperScan(basePackages = "cn.center.mapper.one", sqlSessionFactoryRef = "sqlSessionFactoryOne")
+
+		@Primary
+		@Bean(name = "sqlSessionFactoryOne")
+		public SqlSessionFactory sqlSessionFactoryOne(@Qualifier("dataSourceOne")DataSource dataSourceOne) throws Exception {
+			SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+			sessionFactory.setDataSource(dataSourceOne);
+			sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:cn/center/mapper/one/*.xml"));
+			
+			// mybatis分页
+			Interceptor interceptor = new PageInterceptor();
+	        Properties props = new Properties();
+	//      oracle,mysql,mariadb,sqlite,hsqldb,postgresql,db2,sqlserver,informix,h2,sqlserver2012,derby
+	//      特别注意：使用 SqlServer2012 数据库时，需要手动指定为 sqlserver2012，否则会使用 SqlServer2005 的方式进行分页。
+	        props.setProperty("helperDialect", "mysql");
+	        props.setProperty("reasonable", "true");//是否分页合理化
+	        props.setProperty("supportMethodsArguments", "true");
+	        props.setProperty("params", "count=countSql");
+	        interceptor.setProperties(props); // 添加插件
+	        sessionFactory.setPlugins(new Interceptor[]{interceptor});
+			return sessionFactory.getObject();
+		}
+写法二
+	配置定义拦截器
+	
+	## pagehelper
+	pagehelper.helperDialect=mysql
+	#是否分页合理化
+	pagehelper.reasonable=true
+	pagehelper.supportMethodsArguments=true
+	pagehelper.params=count=countSql
+	## pagehelper 指定cn.center.mapper显示日志
+	logging.level.cn.center.mapper=debug
+
+
+写法三
+	mybatis.xml配置中添加
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	    <property name="dataSource" ref="dataSource" />
+	    <!-- 扫描mapping.xml文件 -->
+	    <property name="mapperLocations" value="classpath:mapper/*.xml"></property>
+	    <!-- 配置分页插件 -->
+	     <property name="plugins">
+	        <array>
+	          <bean class="com.github.pagehelper.PageHelper">
+	            <property name="properties">
+	              <value>
+	                helperDialect=mysql
+	                reasonable=true
+	                supportMethodsArguments=true
+	                params=count=countSql
+	              </value>
+	            </property>
+	          </bean>
+	        </array>
+	      </property>
+	  </bean>
+
+写法四
+	在代码中添加，使用@Bean注解在启动程序的时候初始化。
+	@Bean
+	public PageHelper pageHelper() {
+		PageHelper pageHelper = new PageHelper();
+		Properties properties = new Properties();
+		// 数据库
+		properties.setProperty("helperDialect", "mysql");
+		// 是否分页合理化
+		properties.setProperty("reasonable", "true");
+		properties.setProperty("offsetAsPageNum", "true");
+		// 是否进行count查询
+		properties.setProperty("params", "count=countSql");
+		pageHelper.setProperties(properties);
+	}

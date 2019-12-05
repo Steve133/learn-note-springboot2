@@ -1,0 +1,7 @@
+查看Druid监控数据源为空
+
+但是访问数据之后，对应数据源有出现了
+
+原来加载数据源时要就上
+@Bean(initMethod = "init",destroyMethod = "close")
+public DruidDataSource druidDataSource() {

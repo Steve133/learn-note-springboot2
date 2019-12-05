@@ -1,0 +1,184 @@
+
+
+1可以声明多个resultMap
+	<resultMap id="BaseResultMap" type="com.run.zdr.management.entity.KeyPerson">
+	    <id column="id" property="id"/>
+	    <result column="photo" property="photo"/>
+	    <result column="idcard" property="idcard"/>
+	</resultMap>
+	
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+	    id, photo, idcard
+	</sql>
+	    
+	<resultMap id="getKeyPersonCardsMap" type="com.run.zdr.management.dto.KeyPersonCardDto">
+	    <id column="id" property="id"/>
+	    <result column="photo" property="photo"/>
+	    <result column="idcard" property="idcard"/>
+	    <!-- association ：配置一对一属性 -->
+	    <association column="id" property="active" select="selectKeyPersonActive" javaType="java.lang.Integer"/>
+	    <association column="id" property="unhandle" select="selectUnHandlePersonResultNumByPersonId" javaType="java.lang.Integer"/>
+	    <collection column="id" property="keyTagNames" select="selectKeyTagNames" ofType="java.lang.String"/>
+	    <collection column="id" property="keyTypeNames" select="selectKeyTypeNames" ofType="java.lang.String"/>
+	</resultMap>
+	
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+	    id, photo, idcard, active, unhandle, keyTagNames, keyTypeNames
+	</sql>
+
+2.include直接包含所有项
+	<select id="selectByPage" resultMap="BaseResultMap">
+	    select
+	    <include refid="Base_Column_List" />
+	    from cs_test
+	</select>
+
+3 resultMap里面  关联一个对象
+	association关联-对象
+		<resultMap id="orderUserResultMap" type="com.run.zdr.management.dto.order">
+		    <id column="id" property="id"/>
+		    <result column="photo" property="photo"/>
+		    <result column="idcard" property="idcard"/>
+		    <!-- association ：配置一对一属性 -->
+		    <association column="user" javaType="user">
+		    	<!-- user类映射 -->
+		    	<id property="id" column="user_id" />
+		    	<result property="username" column="username" />
+		    	<result property="address" column="address" />
+		    </association>
+		</resultMap>
+		
+		<!-- 一对一关联，查询订单，订单内部包含用户属性 -->
+		<select id="queryOrderUserResultMap" resultMap="orderUserResultMap">
+		    SELECT
+		    o.id,
+		    o.user_id,
+		    o.number,
+		    o.createtime,
+		    o.note,
+		    u.username,
+		    u.address
+		    FROM
+		    `order` o
+		    LEFT JOIN `user` u ON o.user_id = u.id
+		</select>
+		
+	collection关联-集合
+		类中定义list<order>
+		<resultMap type="user" id="userOrderResultMap">
+		    <id property="id" column="id" />
+		    <result property="username" column="username" />
+		    <result property="birthday" column="birthday" />
+		    <result property="sex" column="sex" />
+		    <result property="address" column="address" />
+		
+		    <!-- 配置一对多的关系
+		        property：填写pojo类中集合类类属性的名称
+		        javaType：填写集合类型的名称 
+		    -->
+		    <collection property="orders" javaType="list" ofType="order">
+		        <!-- 配置主键，是关联Order的唯一标识 -->
+		        <id property="id" column="oid" />
+		        <result property="number" column="number" />
+		        <result property="createtime" column="createtime" />
+		        <result property="note" column="note" />
+		    </collection>
+		</resultMap>
+		
+		<!-- 查询订单同时查询该用户下的订单 -->
+		<select id="queryUserOrder" resultMap="userOrderResultMap">
+		    SELECT
+		    u.id,
+		    u.username,
+		    u.birthday,
+		    u.sex,
+		    u.address,
+		    o.id oid,
+		    o.number,
+		    o.createtime,
+		    o.note
+		    FROM
+		    `user` u
+		    LEFT JOIN `order` o ON u.id = o.user_id
+		</select>
+		
+	association关联-嵌套 Select 查询
+		<resultMap id="getKeyPersonCardsMap" type="com.run.zdr.management.dto.KeyPersonCardDto">
+		    <id column="id" property="id"/>
+		    <result column="photo" property="photo"/>
+		    <result column="idcard" property="idcard"/>
+		    <!-- association ：配置一对一属性  
+		    	property定义对象名称 
+		    	select指定查询方法 
+		    	column传入参数的表达式 
+		    	javaType返回java对象类型 
+		    	ofType返回数据的类型 
+		    -->
+		    <association property="active" select="selectKeyPersonActive" column="id" javaType="java.lang.Integer"/>
+		    <collection property="childMenu" ofType="Menu" select="getMenus" column="{parent_id=id}"/>
+		</resultMap>
+		
+	    <select id="selectKeyPersonActive" resultType="java.lang.Integer">
+	        select count(*)
+	        from control_task_result
+	        <where>
+	            key_person_id = #{id}
+	        </where>
+	    </select>
+	    <select id="getMenus" resultMap="getKeyPersonCardsMap">
+		    SELECT m.id, m.photo, m.idcard FROM m_menu m where 1=1
+		    <choose>
+		        <when test="parent_id!=null">
+		            and m.parent_id = #{parent_id}
+		        </when>
+		        <otherwise>
+		            and m.parent_id = '0'
+		        </otherwise>
+		    </choose>
+		</select>
+    
+	collection关联-嵌套 Select 查询
+		<resultMap id="getKeyPersonCardsMap" type="com.run.zdr.management.dto.KeyPersonCardDto">
+		    <id column="id" property="id"/>
+		    <result column="photo" property="photo"/>
+		    <result column="idcard" property="idcard"/>
+		    <!-- association ：配置一对多属性 -->
+		    <collection property="keyTagNames" ofType="java.lang.String" column="id" select="selectKeyTagNames"/>
+		    <collection property="ruleList" javaType="ArrayList" column="id" select="selectReFundInfo"/>
+		</resultMap>
+		
+	    <select id="selectKeyTagNames" resultType="java.lang.String">
+	        select distinct kt.tag_name
+	        from key_person_tag kt
+	        where kt.key_person_id=#{id}
+	    </select>
+	    <select id="selectReFundInfo" parameterType="java.lang.Integer" resultType="java.util.Map">
+	        select
+	            csrr.id,
+	            csrr.strategy_id,
+	            csrr.time_limit,
+	            csrr.fee_type,
+	            csrr.fee_value
+	        from
+	            `CL_STRATEGY_REFUND_REL` as csrr
+	        where
+	            csrr.`status` = 1 and csrr.strategy_id = #{id}
+	    </select>
+	
+	
+构造方法constructor
+	用于在实例化类时，注入结果到构造方法中
+		public User(String id, String name) {
+		    this.id = id;
+		    this.username = name;
+		}
+		
+		<resultMap id="getUserByIdMap" type="User">
+		    <constructor>
+		        <idArg column="id" name="id" javaType="string"></idArg>
+		        <arg column="username" name="name" javaType="string"></arg>
+		    </constructor>
+		</resultMap>
+	

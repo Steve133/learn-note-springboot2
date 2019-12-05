@@ -1,0 +1,7 @@
+
+
+spring.datasource.hikari.one.url=
+
+改为
+
+spring.datasource.hikari.one.jdbc-url=

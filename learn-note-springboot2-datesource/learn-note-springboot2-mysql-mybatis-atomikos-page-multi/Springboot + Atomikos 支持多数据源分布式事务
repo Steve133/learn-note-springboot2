@@ -1,0 +1,19 @@
+Springboot + Atomikos 支持多数据源分布式事务
+
+
+数据库1	multipledatasource1
+CREATE TABLE `cs_test` (
+  `id` varchar(200) NOT NULL,
+  `userid` varchar(200) DEFAULT NULL,
+  `score` int(200) DEFAULT NULL,
+  `classid` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+数据库2	multipledatasource2
+CREATE TABLE `cs_teacher` (
+  `id` varchar(100) NOT NULL,
+  `teachername` varchar(100) DEFAULT NULL,
+  `classid` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8

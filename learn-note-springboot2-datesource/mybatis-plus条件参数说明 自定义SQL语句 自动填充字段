@@ -1,0 +1,135 @@
+查询方式				说明
+setSqlSelect		设置 SELECT 查询字段
+where				WHERE 语句，拼接 + WHERE 条件
+and					AND 语句，拼接 + AND 字段=值
+andNew				AND 语句，拼接 + AND (字段=值)
+or					OR 语句，拼接 + OR 字段=值
+orNew				OR 语句，拼接 + OR (字段=值)
+e	
+allEq				基于 map 内容等于=
+ne					不等于<>
+gt					大于>
+ge					大于等于>=
+lt					小于<
+le					小于等于<=
+like				模糊查询 LIKE
+notLike				模糊查询 NOT LIKE
+in					IN 查询
+notIn				NOT IN 查询
+isNull				NULL 值查询
+isNotNull					IS NOT NULL
+groupBy				分组 GROUP BY
+having				HAVING 关键词
+orderBy				排序 ORDER BY
+orderAsc			ASC 排序 ORDER BY
+orderDesc			DESC 排序 ORDER BY
+exists				EXISTS 条件语句
+notExists					NOT EXISTS 条件语句
+between				BETWEEN 条件语句
+notBetween			NOT BETWEEN 条件语句
+addFilter			自由拼接 SQL
+last				拼接在最后，例如：last("LIMIT 1")
+
+
+/**
+ * 
+ * @param rowBounds 分页对象 直接传入page即可
+ * @param wrapper 条件构造器
+ * @return
+ */
+List<User> selectUserWrapper(RowBounds rowBounds, @Param("ew") Wrapper<User> wrapper);
+
+
+<!-- 条件构造器形式 -->
+<select id="selectUserWrapper" resultType="user">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM USER
+    <where>
+        ${ew.sqlSegment}
+    </where>
+</select>
+
+
+@Test
+public void testCustomSql() {
+    User user = new User();
+    user.setCode("703");
+    user.setName("okong-condition");
+    user.insert();
+    
+    EntityWrapper<User> qryWrapper = new EntityWrapper<>();
+    qryWrapper.eq(User.CODE, user.getCode());
+    
+    Page<User> pageUser = new Page<>();
+    pageUser.setCurrent(1);
+    pageUser.setSize(10);
+    
+    List<User> userlist = userDao.selectUserWrapper(pageUser, qryWrapper);
+    System.out.println(userlist.get(0));
+    log.info("自定义sql结束");
+}
+
+
+/************************************自定义SQL语句	注解形式**********************************************************************/
+@Select("SELECT * FROM USER WHERE CODE = #{userCode}")
+List<User> selectUserCustomParamsByAnno(@Param("userCode")String userCode);
+/************************************自定义SQL语句	xml形式**********************************************************************/
+List<User> selectUserCustomParamsByXml(@Param("userCode")String userCode);
+<!-- 由于设置了别名：typeAliasesPackage=cn.lqdev.learning.mybatisplus.samples.biz.entity，所以resultType可以不写全路径了。 -->
+<select id="selectUserCustomParamsByXml" resultType="user">
+    SELECT 
+    <include refid="Base_Column_List"/> 
+    FROM USER 
+   WHERE CODE = #{userCode}
+</select>
+
+
+/************************************公共字段自动填充***********************************************************/
+User.java
+/**
+     * 创建时间
+ */
+@TableField(fill=FieldFill.INSERT)
+private Date gmtCreate;
+/**
+     * 修改时间
+ */
+@TableField(fill=FieldFill.INSERT_UPDATE)
+private Date gmtModified;
+
+
+【MybatisObjectHandler.java】
+public class MybatisObjectHandler extends MetaObjectHandler{
+
+    @Override
+    public void insertFill(MetaObject metaObject) {
+        //新增时填充的字段
+        setFieldValByName("gmtCreate", new Date(), metaObject);
+        setFieldValByName("gmtModified", new Date(), metaObject);
+        
+    }
+
+    @Override
+    public void updateFill(MetaObject metaObject) {
+        //更新时 需要填充字段
+        setFieldValByName("gmtModified", new Date(), metaObject);
+    }
+}
+
+
+<bean id="globalConfig" class="com.baomidou.mybatisplus.entity.GlobalConfiguration">
+    <!--
+        AUTO->`0`("数据库ID自增")QW
+         INPUT->`1`(用户输入ID")
+        ID_WORKER->`2`("全局唯一ID")
+        UUID->`3`("全局唯一ID")
+    -->
+    <property name="idType" value="2" />
+    <property name="metaObjectHandler" ref="mybatisObjectHandler"></property>
+</bean>
+
+<bean id="mybatisObjectHandler" class="cn.lqdev.learning.mybatisplus.samples.config.MybatisObjectHandler"/>
+
+
+

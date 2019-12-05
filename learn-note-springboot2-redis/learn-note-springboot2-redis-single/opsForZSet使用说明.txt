@@ -1,0 +1,333 @@
+opsForZSet()方法的使用：
+
+    1、add(K key, V value, double score)
+ 
+
+添加元素到变量中同时指定元素的分值。
+
+ 
+
+Java代码  收藏代码
+redisTemplate.opsForZSet().add("zSetValue","A",1);  
+redisTemplate.opsForZSet().add("zSetValue","B",3);  
+redisTemplate.opsForZSet().add("zSetValue","C",2);  
+redisTemplate.opsForZSet().add("zSetValue","D",5);  
+     2、range(K key, long start, long end)
+ 
+
+        获取变量指定区间的元素。
+
+        
+
+Java代码  收藏代码
+Set zSetValue = redisTemplate.opsForZSet().range("zSetValue",0,-1);  
+System.out.println("通过range(K key, long start, long end)方法获取指定区间的元素:" + zSetValue);  
+ 
+
+      3、rangeByLex(K key, RedisZSetCommands.Range range)
+ 
+
+   用于获取满足非score的排序取值。这个排序只有在有相同分数的情况下才能使用，如果有不同的分数则返回值不确定。
+
+ 
+
+Java代码  收藏代码
+RedisZSetCommands.Range range = new RedisZSetCommands.Range();  
+//range.gt("A");  
+range.lt("D");  
+zSetValue = redisTemplate.opsForZSet().rangeByLex("zSetValue", range);  
+System.out.println("通过rangeByLex(K key, RedisZSetCommands.Range range)方法获取满足非score的排序取值元素:" + zSetValue);  
+            4、rangeByLex(K key, RedisZSetCommands.Range range, RedisZSetCommands.Limit limit)
+           用于获取满足非score的设置下标开始的长度排序取值。
+
+ 
+
+Java代码  收藏代码
+RedisZSetCommands.Limit limit = new RedisZSetCommands.Limit();  
+limit.count(2);  
+//起始下标为0  
+limit.offset(1);  
+zSetValue = redisTemplate.opsForZSet().rangeByLex("zSetValue", range,limit);  
+System.out.println("通过rangeByLex(K key, RedisZSetCommands.Range range, RedisZSetCommands.Limit limit)方法获取满足非score的排序取值元素:" + zSetValue);  
+ 
+
+       5、add(K key, Set<ZSetOperations.TypedTuple<V>> tuples)
+   通过TypedTuple方式新增数据。
+
+ 
+
+Java代码  收藏代码
+ZSetOperations.TypedTuple<Object> typedTuple1 = new DefaultTypedTuple<Object>("E",6.0);  
+ZSetOperations.TypedTuple<Object> typedTuple2 = new DefaultTypedTuple<Object>("F",7.0);  
+ZSetOperations.TypedTuple<Object> typedTuple3 = new DefaultTypedTuple<Object>("G",5.0);  
+Set<ZSetOperations.TypedTuple<Object>> typedTupleSet = new HashSet<ZSetOperations.TypedTuple<Object>>();  
+typedTupleSet.add(typedTuple1);  
+typedTupleSet.add(typedTuple2);  
+typedTupleSet.add(typedTuple3);  
+redisTemplate.opsForZSet().add("typedTupleSet",typedTupleSet);  
+zSetValue = redisTemplate.opsForZSet().range("typedTupleSet",0,-1);  
+System.out.println("通过add(K key, Set<ZSetOperations.TypedTuple<V>> tuples)方法添加元素:" + zSetValue);  
+ 
+
+        6、rangeByScore(K key, double min, double max)
+    根据设置的score获取区间值。
+
+ 
+
+Java代码  收藏代码
+zSetValue = redisTemplate.opsForZSet().rangeByScore("zSetValue",1,2);  
+System.out.println("通过rangeByScore(K key, double min, double max)方法根据设置的score获取区间值:" + zSetValue);  
+ 
+
+7、rangeByScore(K key, double min, double max,long offset, long count)
+   根据设置的score获取区间值从给定下标和给定长度获取最终值。
+
+ 
+
+Java代码  收藏代码
+zSetValue = redisTemplate.opsForZSet().rangeByScore("zSetValue",1,5,1,3);  
+System.out.println("通过rangeByScore(K key, double min, double max, long offset, long count)方法根据设置的score获取区间值:" + zSetValue);  
+ 
+
+       8、rangeWithScores(K key, long start, long end)
+   获取RedisZSetCommands.Tuples的区间值。
+
+ 
+
+Java代码  收藏代码
+Set<ZSetOperations.TypedTuple<Object>> typedTupleSet = redisTemplate.opsForZSet().rangeWithScores("typedTupleSet",1,3);  
+Iterator<ZSetOperations.TypedTuple<Object>> iterator = typedTupleSet.iterator();  
+while (iterator.hasNext()){  
+    ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();  
+    Object value = typedTuple.getValue();  
+    double score = typedTuple.getScore();  
+    System.out.println("通过rangeWithScores(K key, long start, long end)方法获取RedisZSetCommands.Tuples的区间值:" + value + "---->" + score );  
+}  
+ 
+
+        9、rangeByScoreWithScores(K key, double min, double max)
+   获取RedisZSetCommands.Tuples的区间值通过分值。
+
+ 
+
+Java代码  收藏代码
+Set<ZSetOperations.TypedTuple<Object>> typedTupleSet = redisTemplate.opsForZSet().rangeByScoreWithScores("typedTupleSet",5,8);  
+iterator = typedTupleSet.iterator();  
+while (iterator.hasNext()){  
+    ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();  
+    Object value = typedTuple.getValue();  
+    double score = typedTuple.getScore();  
+    System.out.println("通过rangeByScoreWithScores(K key, double min, double max)方法获取RedisZSetCommands.Tuples的区间值通过分值:" + value + "---->" + score );  
+}  
+ 
+
+       10、rangeByScoreWithScores(K key, double min, double max, long offset, long count)
+    获取RedisZSetCommands.Tuples的区间值从给定下标和给定长度获取最终值通过分值。
+
+ 
+
+Java代码  收藏代码
+Set<ZSetOperations.TypedTuple<Object>> typedTupleSet = redisTemplate.opsForZSet().rangeByScoreWithScores("typedTupleSet",5,8,1,1);  
+iterator = typedTupleSet.iterator();  
+while (iterator.hasNext()){  
+    ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();  
+    Object value = typedTuple.getValue();  
+    double score = typedTuple.getScore();  
+    System.out.println("通过rangeByScoreWithScores(K key, double min, double max, long offset, long count)方法获取RedisZSetCommands.Tuples的区间值从给定下标和给定长度获取最终值通过分值:" + value + "---->" + score );  
+}  
+ 
+
+         11、count(K key, double min, double max)
+     获取区间值的个数。
+
+ 
+
+Java代码  收藏代码
+long count = redisTemplate.opsForZSet().count("zSetValue",1,5);  
+System.out.println("通过count(K key, double min, double max)方法获取区间值的个数:" + count);  
+ 
+
+        12、rank(K key, Object o)
+    获取变量中元素的索引,下标开始位置为0。
+
+ 
+
+Java代码  收藏代码
+long index = redisTemplate.opsForZSet().rank("zSetValue","B");  
+System.out.println("通过rank(K key, Object o)方法获取变量中元素的索引:" + index);  
+ 
+
+      13、scan(K key, ScanOptions options)
+          匹配获取键值对，ScanOptions.NONE为获取全部键值对；ScanOptions.scanOptions().match("C").build()匹配获取键位map1的键值对,不能模糊匹配。
+
+ 
+
+Java代码  收藏代码
+//Cursor<Object> cursor = redisTemplate.opsForSet().scan("setValue", ScanOptions.NONE);  
+Cursor<ZSetOperations.TypedTuple<Object>> cursor = redisTemplate.opsForZSet().scan("zSetValue", ScanOptions.NONE);  
+while (cursor.hasNext()){  
+    ZSetOperations.TypedTuple<Object> typedTuple = cursor.next();  
+    System.out.println("通过scan(K key, ScanOptions options)方法获取匹配元素:" + typedTuple.getValue() + "--->" + typedTuple.getScore());  
+}  
+ 
+
+       14、score(K key, Object o)
+   获取元素的分值。
+
+ 
+
+Java代码  收藏代码
+double score = redisTemplate.opsForZSet().score("zSetValue","B");  
+System.out.println("通过score(K key, Object o)方法获取元素的分值:" + score);  
+ 
+
+  15、zCard(K key)
+   获取变量中元素的个数。
+
+ 
+
+Java代码  收藏代码
+long zCard = redisTemplate.opsForZSet().zCard("zSetValue");  
+System.out.println("通过zCard(K key)方法获取变量的长度:" + zCard);  
+ 
+
+  16、incrementScore(K key, V value, double delta)
+   修改变量中的元素的分值。
+
+ 
+
+Java代码  收藏代码
+double incrementScore = redisTemplate.opsForZSet().incrementScore("zSetValue","C",5);  
+System.out.print("通过incrementScore(K key, V value, double delta)方法修改变量中的元素的分值:" + incrementScore);  
+score = redisTemplate.opsForZSet().score("zSetValue","C");  
+System.out.print(",修改后获取元素的分值:" + score);  
+zSetValue = redisTemplate.opsForZSet().range("zSetValue",0,-1);  
+System.out.println("，修改后排序的元素:" + zSetValue);  
+ 
+
+      17、reverseRange(K key, long start, long end)
+   索引倒序排列指定区间元素。
+
+ 
+
+Java代码  收藏代码
+zSetValue = redisTemplate.opsForZSet().reverseRange("zSetValue",0,-1);  
+System.out.println("通过reverseRange(K key, long start, long end)方法倒序排列元素:" + zSetValue);  
+ 
+
+      18、reverseRangeByScore(K key, double min, double max)
+   倒序排列指定分值区间元素。
+
+ 
+
+Java代码  收藏代码
+zSetValue = redisTemplate.opsForZSet().reverseRangeByScore("zSetValue",1,5);  
+System.out.println("通过reverseRangeByScore(K key, double min, double max)方法倒序排列指定分值区间元素:" + zSetValue);  
+ 
+
+     19、reverseRangeByScore(K key, double min, double max, long offset, long count)
+   倒序排列从给定下标和给定长度分值区间元素。
+
+ 
+
+Java代码  收藏代码
+zSetValue = redisTemplate.opsForZSet().reverseRangeByScore("zSetValue",1,5,1,2);  
+System.out.println("通过reverseRangeByScore(K key, double min, double max, long offset, long count)方法倒序排列从给定下标和给定长度分值区间元素:" + zSetValue);  
+ 
+
+     20、reverseRangeByScoreWithScores(K key, double min, double max)
+  倒序排序获取RedisZSetCommands.Tuples的分值区间值。
+
+Java代码  收藏代码
+Set<ZSetOperations.TypedTuple<Object>> typedTupleSet = redisTemplate.opsForZSet().reverseRangeByScoreWithScores("zSetValue",1,5);  
+iterator = typedTupleSet.iterator();  
+while (iterator.hasNext()){  
+    ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();  
+    Object value = typedTuple.getValue();  
+    double score1 = typedTuple.getScore();  
+    System.out.println("通过reverseRangeByScoreWithScores(K key, double min, double max)方法倒序排序获取RedisZSetCommands.Tuples的区间值:" + value + "---->" + score1 );  
+}  
+      21、reverseRangeByScoreWithScores(K key, double min, double max, long offset, long count)
+  倒序排序获取RedisZSetCommands.Tuples的从给定下标和给定长度分值区间值。
+
+Java代码  收藏代码
+Set<ZSetOperations.TypedTuple<Object>> typedTupleSet = redisTemplate.opsForZSet().reverseRangeByScoreWithScores("zSetValue",1,5,1,2);  
+iterator = typedTupleSet.iterator();  
+while (iterator.hasNext()){  
+    ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();  
+    Object value = typedTuple.getValue();  
+    double score1 = typedTuple.getScore();  
+    System.out.println("通过reverseRangeByScoreWithScores(K key, double min, double max, long offset, long count)方法倒序排序获取RedisZSetCommands.Tuples的从给定下标和给定长度区间值:" + value + "---->" + score1 );  
+}  
+       22、reverseRangeWithScores(K key, long start, long end)
+   索引倒序排列区间值。
+
+Java代码  收藏代码
+Set<ZSetOperations.TypedTuple<Object>> typedTupleSet = redisTemplate.opsForZSet().reverseRangeWithScores("zSetValue",1,5);  
+iterator = typedTupleSet.iterator();  
+while (iterator.hasNext()){  
+    ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();  
+    Object value = typedTuple.getValue();  
+    double score1 = typedTuple.getScore();  
+    System.out.println("通过reverseRangeWithScores(K key, long start, long end)方法索引倒序排列区间值:" + value + "----->" + score1);  
+}  
+      23、reverseRank(K key, Object o)
+   获取倒序排列的索引值。
+
+Java代码  收藏代码
+long reverseRank = redisTemplate.opsForZSet().reverseRank("zSetValue","B");  
+System.out.println("通过reverseRank(K key, Object o)获取倒序排列的索引值:" + reverseRank);  
+      24、intersectAndStore(K key, K otherKey, K destKey)
+   获取2个变量的交集存放到第3个变量里面。
+
+Java代码  收藏代码
+redisTemplate.opsForZSet().intersectAndStore("zSetValue","typedTupleSet","intersectSet");  
+zSetValue = redisTemplate.opsForZSet().range("intersectSet",0,-1);  
+System.out.println("通过intersectAndStore(K key, K otherKey, K destKey)方法获取2个变量的交集存放到第3个变量里面:" + zSetValue);  
+      25、intersectAndStore(K key, Collection<K> otherKeys, K destKey)
+   获取多个变量的交集存放到第3个变量里面。
+
+Java代码  收藏代码
+List list = new ArrayList();  
+list.add("typedTupleSet");  
+redisTemplate.opsForZSet().intersectAndStore("zSetValue",list,"intersectListSet");  
+zSetValue = redisTemplate.opsForZSet().range("intersectListSet",0,-1);  
+System.out.println("通过intersectAndStore(K key, Collection<K> otherKeys, K destKey)方法获取多个变量的交集存放到第3个变量里面:" + zSetValue);  
+      26、unionAndStore(K key, K otherKey, K destKey)
+   获取2个变量的合集存放到第3个变量里面。
+
+Java代码  收藏代码
+redisTemplate.opsForZSet().unionAndStore("zSetValue","typedTupleSet","unionSet");  
+zSetValue = redisTemplate.opsForZSet().range("unionSet",0,-1);  
+System.out.println("通过unionAndStore(K key, K otherKey, K destKey)方法获取2个变量的交集存放到第3个变量里面:" + zSetValue);  
+      27、unionAndStore(K key, Collection<K> otherKeys, K destKey)
+   获取多个变量的合集存放到第3个变量里面。
+
+Java代码  收藏代码
+redisTemplate.opsForZSet().unionAndStore("zSetValue",list,"unionListSet");  
+zSetValue = redisTemplate.opsForZSet().range("unionListSet",0,-1);  
+System.out.println("通过unionAndStore(K key, Collection<K> otherKeys, K destKey)方法获取多个变量的交集存放到第3个变量里面:" + zSetValue);  
+      28、remove(K key, Object... values)
+   批量移除元素根据元素值。
+
+Java代码  收藏代码
+long removeCount = redisTemplate.opsForZSet().remove("unionListSet","A","B");  
+zSetValue = redisTemplate.opsForZSet().range("unionListSet",0,-1);  
+System.out.print("通过remove(K key, Object... values)方法移除元素的个数:" + removeCount);  
+System.out.println(",移除后剩余的元素:" + zSetValue);  
+      29、removeRangeByScore(K key, double min, double max)
+   根据分值移除区间元素。
+
+Java代码  收藏代码
+removeCount = redisTemplate.opsForZSet().removeRangeByScore("unionListSet",3,5);  
+zSetValue = redisTemplate.opsForZSet().range("unionListSet",0,-1);  
+System.out.print("通过removeRangeByScore(K key, double min, double max)方法移除元素的个数:" + removeCount);  
+System.out.println(",移除后剩余的元素:" + zSetValue);  
+      30、removeRange(K key, long start, long end)
+         根据索引值移除区间元素。
+
+Java代码  收藏代码
+removeCount = redisTemplate.opsForZSet().removeRange("unionListSet",3,5);  
+zSetValue = redisTemplate.opsForZSet().range("unionListSet",0,-1);  
+System.out.print("通过removeRange(K key, long start, long end)方法移除元素的个数:" + removeCount);  
+System.out.println(",移除后剩余的元素:" + zSetValue); 

@@ -1,0 +1,2 @@
+spring.jooq.sql-dialect
+指定JOOQ使用的SQLDialect，比如POSTGRES.

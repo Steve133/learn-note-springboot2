@@ -1,0 +1,5 @@
+spring.h2.console.enabled
+是否开启控制台，默认为false
+
+spring.h2.console.path
+指定控制台路径，默认为: /h2-console
