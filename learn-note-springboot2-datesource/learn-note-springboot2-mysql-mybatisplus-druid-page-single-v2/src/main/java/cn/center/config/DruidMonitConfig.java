@@ -21,6 +21,14 @@ import com.alibaba.druid.support.spring.stat.DruidStatInterceptor;
  * @description TODO
  * @date 2019年11月20日 下午10:14:14
  */
+
+/**
+ * @author song
+ * @title TODO
+ * @projectName demo
+ * @description TODO
+ * @date 2019年12月6日 下午2:41:38
+ */
 @Configuration
 public class DruidMonitConfig {
 	private org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -30,6 +38,9 @@ public class DruidMonitConfig {
     private String allow;
     /**
      * @ 黑名单
+     */
+    /**
+     * 
      */
     private String deny;
     private String druid_username = "admin";

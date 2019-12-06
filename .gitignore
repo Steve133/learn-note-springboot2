@@ -21,3 +21,12 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+/.metadata/
+/learn-note-springboot2-mq-rabbit-demo-1/target/classes/META-INF/MANIFEST.MF
+/learn-note-springboot2-mq-rabbit-demo-1/target/classes/META-INF/maven/cn.center/learn-note-springboot2-mq-rabbit-demo-1
+/learn-note-springboot2-mq-rabbit-demo-1/target/classes/cn/center/ack
+/learn-note-springboot2-mq-rabbit-demo-1/target/classes/cn/center/amqp
+/learn-note-springboot2-mq-rabbit-demo-2/learn-note-springboot2-mq-rabbit-demo-2-producer-member/target/classes/META-INF
+/learn-note-springboot2-mq-rabbit-demo-2/learn-note-springboot2-mq-rabbit-demo-2-producer-member/target/classes
+/learn-note-springboot2-mq-rabbit-demo-2/learn-note-springboot2-mq-rabbit-demo-2-consumer-msg/target/classes/META-INF
+/learn-note-springboot2-mq-rabbit-demo-2/learn-note-springboot2-mq-rabbit-demo-2-consumer-msg/target/classes
