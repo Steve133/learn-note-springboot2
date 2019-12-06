@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.center.mapper.ScheduleJobMapper" >
-  <resultMap id="BaseResultMap" type="cn.center.pojo.ScheduleJob" >
-    <id column="job_id" property="jobId" jdbcType="BIGINT" />
+<mapper namespace="cn.center.mapper.ScheduleJobLogMapper" >
+  <resultMap id="BaseResultMap" type="cn.center.pojo.ScheduleJobLog" >
+    <id column="log_id" property="logId" jdbcType="BIGINT" />
+    <result column="job_id" property="jobId" jdbcType="BIGINT" />
     <result column="bean_name" property="beanName" jdbcType="VARCHAR" />
     <result column="params" property="params" jdbcType="VARCHAR" />
-    <result column="cron_expression" property="cronExpression" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="TINYINT" />
-    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="error" property="error" jdbcType="VARCHAR" />
+    <result column="times" property="times" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    job_id, bean_name, params, cron_expression, status, remark, create_time
+    log_id, job_id, bean_name, params, status, error, times, create_time
   </sql>
 </mapper>

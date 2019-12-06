@@ -1,5 +1,7 @@
 package cn.center.controller;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,66 +10,108 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cn.center.pojo.ScheduleJob;
 import cn.center.service.ScheduleJobService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
- * <p>
- * 前端控制器
- * </p>
- *
- * @author lanjerry
- * @since 2019-01-28
+ * @author song
+ * @title 前端控制器
+ * 
+ * @date 2019年12月6日 下午11:31:22
  */
+@Api(value = "/job", tags = "job管控")
 @RestController
 @RequestMapping("/job")
 public class ScheduleJobController {
 
-    @Autowired
-    private ScheduleJobService scheduleJobService;
+	@Autowired
+	private ScheduleJobService scheduleJobService;
 
-    @GetMapping(value = "/hello")
-    public String helloSpringBoot() {
-        return "Hello quartz!";
-    }
-
-    @GetMapping("/add")
-    public String add() {
-        ScheduleJob job = new ScheduleJob();
-        job.setJobName("任务02");
-        job.setCronExpression("0/2 * * * * ?");
-        job.setBeanName("testJob02");
-        job.setMethodName("execute");
-        scheduleJobService.add(job);
-        return "新增定时任务成功";
-    }
-
-    @GetMapping("/start/{id}")
-    public String start(@PathVariable("id") Integer id) {
-        scheduleJobService.start(id);
-        return "启动定时任务成功";
-    }
-
-    @GetMapping("/pause/{id}")
-    public String pause(@PathVariable("id") Integer id) {
-        scheduleJobService.pause(id);
-        return "暂停定时任务成功";
-    }
-
-    @GetMapping("/delete/{id}")
-    public String delete(@PathVariable("id") Integer id) {
-        scheduleJobService.delete(id);
-        return "删除定时任务成功";
-    }
-
-    @GetMapping("/startAllJob")
-    public String startAllJob() {
-        scheduleJobService.startAllJob();
-        return "启动所有定时任务成功";
-    }
-
-    @GetMapping("/pauseAllJob")
-    public String pauseAllJob() {
-        scheduleJobService.pauseAllJob();
-        return "暂停所有定时任务成功";
-    }
+	@GetMapping(value = "/hello")
+	public String helloSpringBoot() {
+		return "Hello quartz!";
+	}
+	/**
+	 * @description 添加定时器
+	 * @return
+	 * @author song
+	 * @date 2019年12月6日 下午11:32:48
+	 */
+	@ApiOperation(value = "添加定时器", notes = "添加定时器")
+	@GetMapping("/add")
+	public String add() {
+		ScheduleJob scheduleJob = new ScheduleJob();
+		scheduleJob.setJobId(1L);
+		scheduleJob.setBeanName("getTimeTask");
+		// 每分钟执行一次
+		scheduleJob.setCronExpression("0 0/1 * * * ?");
+		scheduleJob.setParams("Hello,Quart-Job");
+		scheduleJob.setStatus(0);
+		scheduleJob.setRemark("获取时间定时器");
+		scheduleJob.setCreateTime(new Date());
+		scheduleJobService.insert(scheduleJob);
+		return "新增定时任务成功<br>"+scheduleJob.toString();
+	}
+	/**
+	 * @description 执行一次定时器
+	 * @return
+	 * @author song
+	 * @date 2019年12月6日 下午11:43:48
+	 */
+	@ApiOperation(value = "执行一次定时器", notes = "执行一次定时器")
+	@GetMapping("/start/{id}")
+	public String start(@PathVariable("id") Long jobId) {
+		scheduleJobService.run(jobId);
+		return "启动定时任务成功";
+	}
+	/**
+	 * @description 更新定时器
+	 * @return
+	 * @author song
+	 * @date 2019年12月6日 下午11:45:26
+	 */
+	@ApiOperation(value = "更新定时器", notes = "更新定时器")
+	@GetMapping("/updateJob/{id}")
+	public String updateJob(@PathVariable("id") Long jobId) {
+		ScheduleJob ScheduleJob = scheduleJobService.selectByPrimaryKey(jobId);
+		ScheduleJob.setParams("Hello,Job_Quart");
+		scheduleJobService.updateByPrimaryKeySelective(ScheduleJob);
+		return "更新定时任务成功";
+	}
+	/**
+	 * @description 停止定时器
+	 * @return
+	 * @author song
+	 * @date 2019年12月6日 下午11:46:23
+	 */
+	@ApiOperation(value = "停止定时器", notes = "停止定时器")
+	@GetMapping("/pauseJob/{id}")
+	public String pauseJob(@PathVariable("id") Long jobId) {
+		scheduleJobService.pauseJob(jobId);
+		return "停止定时任务成功";
+	}
+	/**
+	 * @description 恢复定时器
+	 * @return
+	 * @author song
+	 * @date 2019年12月6日 下午11:47:12
+	 */
+	@ApiOperation(value = "恢复定时器", notes = "恢复定时器")
+	@GetMapping("/resumeJob/{id}")
+	public String resumeJob(@PathVariable("id") Long jobId) {
+		scheduleJobService.resumeJob(jobId);
+		return "恢复定时任务成功";
+	}
+	/**
+	 * @description 删除定时器
+	 * @return
+	 * @author song
+	 * @date 2019年12月6日 下午11:47:54
+	 */
+	@ApiOperation(value = "删除定时器", notes = "删除定时器")
+	@GetMapping("/deleteJob/{id}")
+	public String deleteJob(@PathVariable("id") Long jobId) {
+		scheduleJobService.delete(jobId);
+		return "删除定时任务成功";
+	}
 }
-

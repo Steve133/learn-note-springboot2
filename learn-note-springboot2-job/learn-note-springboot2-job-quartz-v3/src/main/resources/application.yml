@@ -1,39 +1,46 @@
 server:
   tomcat:
-    uri-encoding: UTF-8
     ## tomcat最大线程数，默认为200  
     max-threads: 1000
+    uri-encoding: UTF-8
     min-spare-threads: 30
-  port: 7001
   connection-timeout: 5000ms
   servlet:
-    context-path: /quart-job
+    context-path: /
 
 spring:
   application:
-    name: ware-quart-job
+    name: learn-note-job
   profiles:
     active: dev
-  mvc:
-    throw-exception-if-no-handler-found: true
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML5
+    encoding: UTF-8
+    cache: false
+    #静态文件配置
+  resources:
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+#  mvc:
+#    throw-exception-if-no-handler-found: true
+#    static-path-pattern: /**
+
+logging:
+  config: classpath:log/logback-spring.xml
+  
+
 
 # mybatis
 mybatis-plus:
-  mapper-locations: classpath*:/mybatis/mapper/**/*.xml
+  mapper-locations: classpath*:/mapper/**/*Mapper.xml
   #实体扫描，多个package用逗号或者分号分隔
-  type-aliases-package: com.quart.job.entity
-  global-config:
-    #数据库相关配置
-    db-config:
-      id-type: AUTO
-      field-strategy: NOT_NULL
-      column-underline: true
-      logic-delete-value: -1
-      logic-not-delete-value: 0
-    banner: false
+  type-aliases-package: cn.center.pojo
   #原生配置
   configuration:
-    map-underscore-to-camel-case: true
-    cache-enabled: false
-    call-setters-on-nulls: true
-    jdbc-type-for-null: 'null'
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

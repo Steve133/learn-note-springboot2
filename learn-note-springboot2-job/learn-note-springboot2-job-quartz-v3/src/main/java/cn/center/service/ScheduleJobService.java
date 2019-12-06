@@ -1,5 +1,7 @@
 package cn.center.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import cn.center.pojo.ScheduleJob;
@@ -12,56 +14,27 @@ import cn.center.pojo.ScheduleJob;
  * @date 2019年11月19日 上午9:33:52
  */
 public interface ScheduleJobService extends IService<ScheduleJob> {
+	// 主键查询
+	ScheduleJob selectByPrimaryKey(Long jobId);
 
-    /**
-     * 新增定时任务
-     *
-     * @author lanjerry
-     * @date 2019/1/28 15:37
-     * @param job 任务
-     */
-    void add(ScheduleJob job);
+	// 列表查询
+	List<ScheduleJob> selectByExample(ScheduleJob entity);
 
-    /**
-     * 启动定时任务
-     *
-     * @author lanjerry
-     * @date 2019/1/28 16:49
-     * @param id 任务id
-     */
-    void start(int id);
+	// 保存
+	int insert(ScheduleJob entity);
 
-    /**
-     * 暂停定时任务
-     *
-     * @author lanjerry
-     * @date 2019/1/28 16:49
-     * @param id 任务id
-     */
-    void pause(int id);
+	// 更新
+	int updateByPrimaryKeySelective(ScheduleJob entity);
 
-    /**
-     * 删除定时任务
-     *
-     * @author lanjerry
-     * @date 2019/1/28 16:49
-     * @param id 任务id
-     */
-    void delete(int id);
+	// 停止
+	void pauseJob(Long jobId);
 
-    /**
-     * 启动所有定时任务
-     *
-     * @author lanjerry
-     * @date 2019/1/28 16:49
-     */
-    void startAllJob();
+	// 恢复
+	void resumeJob(Long jobId);
 
-    /**
-     * 暂停所有定时任务
-     *
-     * @author lanjerry
-     * @date 2019/1/28 16:49
-     */
-    void pauseAllJob();
+	// 执行
+	void run(Long jobId);
+
+	// 删除
+	void delete(Long jobId);
 }

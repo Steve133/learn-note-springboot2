@@ -1,23 +1,28 @@
 package cn.center.pojo;
 
-import lombok.Data;
-import lombok.ToString;
-
 import java.io.Serializable;
 import java.util.Date;
 
+import lombok.Data;
+import lombok.ToString;
+
+/**
+ * @author song
+ * @title 定时任务日志
+ * 
+ * @date 2019年12月7日 上午12:32:25
+ */
 @Data
 @ToString
-public class ScheduleJob implements Serializable {
+public class ScheduleJobLog implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public static final String JOB_PARAM_KEY = "JOB_PARAM_KEY";
-	
+	private Long logId;
 	private Long jobId;
 	private String beanName;
 	private String params;
-	private String cronExpression;
 	private Integer status;
-	private String remark;
+	private String error;
+	private Integer times;
 	private Date createTime;
 }
