@@ -1,0 +1,45 @@
+erlang语言安装包：otp_win64_21.1.exe
+
+安装后配置环境 
+ERLANG_HOME
+D:\Work\CompilerTool\erl10.1
+
+Path
+%ERLANG_HOME%\bin\;
+
+安装rabbitmq-server-3.7.8.exe
+
+启动栏启动：rabbitmq-server-start 
+
+后台访问地址：127.0.0.1:15672
+
+注意：
+在执行http://localhost:15672/ 提示该页无法访问，因为这是rabbitmq安装后的一个web管理平台入口。当安装后就能访问了。需要在cmd窗口执行一个命令：
+ rabbitmq-plugins enable rabbitmq_management
+此命令执行要先定位到rabbitmq的安装目录下的sbin文件夹下。
+
+无法在web页打开管理界面，则继续按照以下方式操作：
+使用管理员打开cmd执行此命令：net stop RabbitMQ && net start RabbitMQ
+
+账号密码都是：guest
+
+
+==============================================
+进入页面，
+	进入overview
+		显示端口号，通信端口5672
+				http15672
+	进入admin
+		1、显示当前用户列表
+		2、添加用户，后，列表Can access virtual hosts	报黄！！！！--->为啥呢---->要添加Virtual Hosts
+		注意Virtual Hosts这个东西有点像restful，是做业务隔离的
+
+		
+		
+===============================================
+5种队列形式
+	点对点
+	工作（公平性）队列  ==>能者多劳
+	发布订阅
+	路由routing
+	通配符topics
