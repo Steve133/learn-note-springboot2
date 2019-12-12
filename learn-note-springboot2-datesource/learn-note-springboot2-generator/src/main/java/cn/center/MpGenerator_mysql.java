@@ -55,9 +55,9 @@ public class MpGenerator_mysql {
 	private static final DbType dbType = DbType.MYSQL;//数据类型---如果是oracle 要打开全局大写
 	private static final String MODULE_NAME = null;//.Java文件生成的路径后加 模块名
 	private static final String PACKAGE_NAME = "cn.center";//.Java文件生成的路径
+	private static String[] tables = new String[] { "SYS_MENU" };
 
 	public static void main(String[] args) {
-
 		
 		// 自定义需要填充的字段
         List<TableFill> tableFillList = new ArrayList<TableFill>();
@@ -99,7 +99,7 @@ public class MpGenerator_mysql {
 					new GlobalConfig()
 					.setOutputDir(OUT_PATH+"/src/main/java")// 输出目录
 					.setFileOverride(true)// 是否覆盖已有文件，默认是false
-					.setIdType(IdType.NONE)// 主键策略
+					//.setIdType(IdType.NONE)// 主键策略
 					.setSwagger2(true)
 					.setActiveRecord(false)// 不需要 ActiveRecord 特性的请改为false
 					.setEnableCache(false)// Mapper.xml 二级缓存

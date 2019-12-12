@@ -2,6 +2,9 @@ package cn.center.framework.log;
 
 import java.io.Serializable;
 
+import lombok.Data;
+import lombok.ToString;
+
 /**
  * @author song
  * @title 日志实体类基类-存放公共字段
@@ -9,8 +12,12 @@ import java.io.Serializable;
  * @description TODO
  * @date 2019年11月15日 下午3:41:59
  */
+@Data
+@ToString
 public abstract class BaseLogBean implements Serializable {
-    // 日志流水号
+	private static final long serialVersionUID = 1L;
+	
+	// 日志流水号
     private Long logId;
     // 日志记录时间
     private String logTime;
@@ -26,68 +33,4 @@ public abstract class BaseLogBean implements Serializable {
     private String appId;
     // 来访应用版本
     private String appVersion;
-
-    public Long getLogId() {
-        return logId;
-    }
-
-    public void setLogId(Long logId) {
-        this.logId = logId;
-    }
-
-    public String getLogTime() {
-        return logTime;
-    }
-
-    public void setLogTime(String logTime) {
-        this.logTime = logTime;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(String organization) {
-        this.organization = organization;
-    }
-
-    public String getTerminalId() {
-        return terminalId;
-    }
-
-    public void setTerminalId(String terminalId) {
-        this.terminalId = terminalId;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getAppVersion() {
-        return appVersion;
-    }
-
-    public void setAppVersion(String appVersion) {
-        this.appVersion = appVersion;
-    }
 }

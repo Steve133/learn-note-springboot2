@@ -54,16 +54,13 @@ public class CityESServiceImpl implements CityService {
         //   - 字段对应权重分设置，可以优化成 enum
         //   - 由于无相关性的分值默认为 1 ，设置权重分最小值为 10
         // Function Score Query
-        FunctionScoreQueryBuilder functionScoreQueryBuilder = QueryBuilders.functionScoreQuery()
-                .add(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("cityname", searchContent)),
-                    ScoreFunctionBuilders.weightFactorFunction(1000))
-                .add(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("description", searchContent)),
-                        ScoreFunctionBuilders.weightFactorFunction(100));
-
+        FunctionScoreQueryBuilder functionScoreQueryBuilder = QueryBuilders.functionScoreQuery(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("cityname", searchContent)), ScoreFunctionBuilders.weightFactorFunction(1000));
+        FunctionScoreQueryBuilder functionScoreQueryBuilder2 = QueryBuilders.functionScoreQuery(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("description", searchContent)), ScoreFunctionBuilders.weightFactorFunction(100));
+        
         // 创建搜索 DSL 查询
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withPageable(pageable)
-                .withQuery(functionScoreQueryBuilder).build();
+                .withQuery(functionScoreQueryBuilder).withQuery(functionScoreQueryBuilder2).build();
 
         logger.info("\n searchCity(): searchContent [" + searchContent + "] \n DSL  = \n " + searchQuery.getQuery().toString());
 

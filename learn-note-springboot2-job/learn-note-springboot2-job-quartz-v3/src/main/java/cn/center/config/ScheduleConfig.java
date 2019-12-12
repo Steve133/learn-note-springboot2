@@ -13,9 +13,13 @@ import java.util.Properties;
  * @date 2019年11月19日 下午11:08:44
  */
 @Configuration
-public class QuartzConfig {
+public class ScheduleConfig {
 	@Bean
 	public SchedulerFactoryBean schedulerFactoryBean(DataSource dataSource) {
+		// 定时器工厂配置
+		SchedulerFactoryBean factory = new SchedulerFactoryBean();
+		factory.setDataSource(dataSource);
+
 		// Quartz参数配置
 		Properties prop = new Properties();
 		// Schedule调度器的实体名字
@@ -45,12 +49,9 @@ public class QuartzConfig {
 		// 从 LOCKS 表查询一行并对这行记录加锁的 SQL 语句
 		prop.put("org.quartz.jobStore.selectWithLockSQL", "SELECT * FROM {0}LOCKS UPDLOCK WHERE LOCK_NAME = ?");
 
-		// 定时器工厂配置
-		SchedulerFactoryBean factory = new SchedulerFactoryBean();
-		factory.setDataSource(dataSource);
 		factory.setQuartzProperties(prop);
 		factory.setSchedulerName("HuskyScheduler");
-//        factory.setStartupDelay(30);
+        factory.setStartupDelay(30);
 		factory.setApplicationContextSchedulerContextKey("applicationContextKey");
 		// 可选，QuartzScheduler 启动时更新己存在的Job
 		factory.setOverwriteExistingJobs(true);

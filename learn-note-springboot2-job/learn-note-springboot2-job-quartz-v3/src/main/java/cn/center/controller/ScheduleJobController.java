@@ -42,10 +42,13 @@ public class ScheduleJobController {
 	public String add() {
 		ScheduleJob scheduleJob = new ScheduleJob();
 		scheduleJob.setJobId(1L);
+		scheduleJob.setJobGroup("我的任务组");
+		scheduleJob.setJobName("我的任务");
 		scheduleJob.setBeanName("getTimeTask");
+		scheduleJob.setMethodName("run");
+		scheduleJob.setMethodParams("Hello,Quart-Job");
 		// 每分钟执行一次
 		scheduleJob.setCronExpression("0 0/1 * * * ?");
-		scheduleJob.setParams("Hello,Quart-Job");
 		scheduleJob.setStatus(0);
 		scheduleJob.setRemark("获取时间定时器");
 		scheduleJob.setCreateTime(new Date());
@@ -74,7 +77,7 @@ public class ScheduleJobController {
 	@GetMapping("/updateJob/{id}")
 	public String updateJob(@PathVariable("id") Long jobId) {
 		ScheduleJob ScheduleJob = scheduleJobService.selectByPrimaryKey(jobId);
-		ScheduleJob.setParams("Hello,Job_Quart");
+		ScheduleJob.setMethodParams("Hello,Job_Quart");
 		scheduleJobService.updateByPrimaryKeySelective(ScheduleJob);
 		return "更新定时任务成功";
 	}

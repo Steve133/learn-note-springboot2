@@ -1,4 +1,4 @@
-package cn.center.framework.common;
+package cn.center.framework.common.support;
 
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,5 +1,7 @@
 package cn.center.framework.log;
 
+import lombok.ToString;
+
 /**
  * @author song
  * @title 用户操作日志实体类
@@ -7,9 +9,11 @@ package cn.center.framework.log;
  * @description TODO
  * @date 2019年11月15日 下午3:42:13
  */
+@ToString
 public class UserOperationLogBean extends BaseLogBean {
+	private static final long serialVersionUID = 1L;
 
-    // 操作类型
+	// 操作类型
     private Integer operateType;
 
     // 操作模块信息

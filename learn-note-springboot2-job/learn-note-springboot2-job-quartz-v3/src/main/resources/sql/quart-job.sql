@@ -1,15 +1,18 @@
 -- 自定义定时任务表
 -- 定时任务配置表
 CREATE TABLE `schedule_job` (
-  `job_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '任务id',
-  `bean_name` varchar(200) DEFAULT NULL COMMENT 'spring bean名称',
-  `params` varchar(2000) DEFAULT NULL COMMENT '参数',
-  `cron_expression` varchar(100) DEFAULT NULL COMMENT 'cron表达式',
-  `status` tinyint(4) DEFAULT NULL COMMENT '任务状态  0：正常  1：暂停',
-  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `job_id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '任务id',
+  `job_group` VARCHAR(200) DEFAULT NULL COMMENT '任务组名称',
+  `job_name` VARCHAR(200) DEFAULT NULL COMMENT '任务名称',
+  `bean_name` VARCHAR(200) DEFAULT NULL COMMENT 'spring bean名称',
+  `method_name` VARCHAR(200) DEFAULT NULL COMMENT '任务方法',
+  `method_params` VARCHAR(200) DEFAULT NULL COMMENT '任务方法参数',
+  `cron_expression` VARCHAR(100) DEFAULT NULL COMMENT 'cron表达式',
+  `status` TINYINT(4) DEFAULT NULL COMMENT '任务状态  0：正常  1：暂停',
+  `remark` VARCHAR(255) DEFAULT NULL COMMENT '备注',
+  `create_time` DATETIME DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`job_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='定时任务';
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='定时任务';
 
 -- 定时任务日志
 CREATE TABLE `schedule_job_log` (

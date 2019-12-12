@@ -31,6 +31,9 @@ public class CsTestServiceImpl extends ServiceImpl<CsTestMapper, CsTest> impleme
 	@Override
 	public void getPage(CsTest csTest ,int page , int limit) {
 		IPage<CsTest> iPage = this.page(new Page(page, limit), new QueryWrapper<>(csTest));
+		
+//		IPage<CsTest> selectPage = csTestMapper.selectPage(new Page<>(page, limit), new QueryWrapper<>(csTest));
+		
 		System.out.println(iPage);
 		List<CsTest> records = iPage.getRecords();
 		for(CsTest test : records) {

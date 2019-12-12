@@ -1,5 +1,8 @@
 package cn.center.framework.log;
 
+import lombok.Data;
+import lombok.ToString;
+
 /**
  * @author song
  * @title 接口服务日志实体类
@@ -7,9 +10,11 @@ package cn.center.framework.log;
  * @description TODO
  * @date 2019年11月15日 下午3:42:06
  */
+@ToString
 public class ServiceAccessLogBean extends BaseLogBean {
+	private static final long serialVersionUID = 1L;
 
-    // 服务描述信息
+	// 服务描述信息
     private String description;
 
     // 访问url
@@ -21,35 +26,36 @@ public class ServiceAccessLogBean extends BaseLogBean {
     // http请求参数
     private Object requestParam;
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    public String getMethod() {
-        return method;
-    }
+	public String getMethod() {
+		return method;
+	}
 
-    public void setMethod(String method) {
-        this.method = method;
-    }
+	public void setMethod(String method) {
+		this.method = method;
+	}
 
-    public Object getRequestParam() {
-        return requestParam;
-    }
+	public Object getRequestParam() {
+		return requestParam;
+	}
 
-    public void setRequestParam(Object requestParam) {
-        this.requestParam = requestParam;
-    }
+	public void setRequestParam(Object requestParam) {
+		this.requestParam = requestParam;
+	}
+    
 }

@@ -17,7 +17,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class RestResult<T> extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 
-	public static final String STATUS_TAG = "status";
+	public static final String CODE_TAG = "code";
 
 	public static final String MSG_TAG = "msg";
 
@@ -82,7 +82,7 @@ public class RestResult<T> extends HashMap<String, Object> {
 	 * @param msg  返回内容
 	 */
 	private RestResult(Type type, String msg) {
-		super.put(STATUS_TAG, type.value);
+		super.put(CODE_TAG, type.value);
 		super.put(MSG_TAG, msg);
 	}
 
@@ -94,7 +94,7 @@ public class RestResult<T> extends HashMap<String, Object> {
 	 * @param data 数据对象
 	 */
 	private RestResult(Type type, String msg, T data) {
-		super.put(STATUS_TAG, type.value);
+		super.put(CODE_TAG, type.value);
 		super.put(MSG_TAG, msg);
 		if (data != null) {
 			super.put(DATA_TAG, data);

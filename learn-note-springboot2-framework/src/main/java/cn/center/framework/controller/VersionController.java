@@ -23,6 +23,4 @@ public class VersionController {
     public String version() {
         return JSON.toJSONString(config);
     }
-
-
 }
